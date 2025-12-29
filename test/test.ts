@@ -1,5 +1,5 @@
 import { assertEquals, assertStringIncludes, assertThrows } from "@std/assert";
-import { ItemBuilder, RssBuilder } from "@vallisneria/deno-rss";
+import { ItemBuilder, RssBuilder } from "@vallisneria/rss";
 
 // ==================== 기본 빌더 테스트 ====================
 

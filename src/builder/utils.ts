@@ -1,4 +1,5 @@
 import type { Author, Item, Rss } from "../model/mod.ts";
+import { cdata } from "@libs/xml";
 
 export function rfc822(date: Temporal.ZonedDateTime) {
   const jsDate = new Date(date.epochMilliseconds);
@@ -15,9 +16,9 @@ export function authorString(author: Author) {
 
 export function rssToXml(rss: Rss) {
   const channel: Partial<Record<keyof Rss, unknown>> = {
-    title: rss.title,
+    title: cdata(rss.title),
     link: rss.link.toString(),
-    description: rss.description,
+    description: cdata(rss.description),
     item: rss.item.map(itemToXml),
   };
 
@@ -75,9 +76,9 @@ export function rssToXml(rss: Rss) {
 
 function itemToXml(item: Item) {
   const data: Partial<Record<keyof Item, unknown>> = {
-    title: item.title,
+    title: cdata(item.title),
     link: item.link.toString(),
-    description: item.description,
+    description: cdata(item.description),
     guid: {
       "@isPermaLink": item.guid.isPermaLink,
       "#text": item.guid.id,
