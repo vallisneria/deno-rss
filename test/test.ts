@@ -63,9 +63,12 @@ Deno.test("RssBuilder - XML 선언이 포함된 유효한 XML 생성", () => {
   assertStringIncludes(rss, '<?xml version="1.0" encoding="UTF-8"?>');
   assertStringIncludes(rss, '<rss version="2.0">');
   assertStringIncludes(rss, "<channel>");
-  assertStringIncludes(rss, "<title>Test Feed</title>");
+  assertStringIncludes(rss, "<title><![CDATA[Test Feed]]></title>");
   assertStringIncludes(rss, "<link>https://example.com/</link>");
-  assertStringIncludes(rss, "<description>Test feed description</description>");
+  assertStringIncludes(
+    rss,
+    "<description><![CDATA[Test feed description]]></description>",
+  );
 });
 
 Deno.test("RssBuilder - XML에 아이템 포함", () => {
@@ -85,7 +88,7 @@ Deno.test("RssBuilder - XML에 아이템 포함", () => {
     .buildRss();
 
   assertStringIncludes(rss, "<item>");
-  assertStringIncludes(rss, "<title>Item Title</title>");
+  assertStringIncludes(rss, "<title><![CDATA[Item Title]]></title>");
   assertStringIncludes(rss, "<link>https://example.com/item</link>");
   assertStringIncludes(rss, '<guid isPermaLink="false">item-1</guid>');
 });
@@ -379,10 +382,16 @@ Deno.test("ItemBuilder - 카테고리 추가", () => {
     .pubDateFromEpochMilliseconds(1234)
     .link(new URL("https://example.com"))
     .guidNonPermalink("test")
-    .category(["Technology", "News"])
+    .category([{ name: "Technology" }, {
+      name: "News",
+      domain: new URL("https://example.com/news"),
+    }])
     .build();
 
-  assertEquals(item.category, ["Technology", "News"]);
+  assertEquals(item.category, [{ name: "Technology" }, {
+    name: "News",
+    domain: new URL("https://example.com/news"),
+  }]);
 });
 
 Deno.test("RssBuilder - 카테고리 추가", () => {
@@ -398,11 +407,18 @@ Deno.test("RssBuilder - 카테고리 추가", () => {
     .title("Feed")
     .link(new URL("https://example.com"))
     .description("Description")
-    .category(["Tech", "Blog"])
+    .category([
+      { name: "Tech", domain: new URL("https://example.com/tech") },
+      { name: "Blog" },
+    ])
     .item([item])
-    .build();
+    .buildRss();
 
-  assertEquals(rss.category, ["Tech", "Blog"]);
+  assertStringIncludes(
+    rss,
+    '<category domain="https://example.com/tech">Tech</category>',
+  );
+  assertStringIncludes(rss, "<category>Blog</category>");
 });
 
 // ==================== 여러 아이템 테스트 ====================
@@ -432,8 +448,8 @@ Deno.test("RssBuilder - 여러 아이템 처리", () => {
     .item(items)
     .buildRss();
 
-  assertStringIncludes(rss, "<title>Item 1</title>");
-  assertStringIncludes(rss, "<title>Item 2</title>");
+  assertStringIncludes(rss, "<title><![CDATA[Item 1]]></title>");
+  assertStringIncludes(rss, "<title><![CDATA[Item 2]]></title>");
   assertStringIncludes(rss, "https://example.com/1");
   assertStringIncludes(rss, "https://example.com/2");
 });
