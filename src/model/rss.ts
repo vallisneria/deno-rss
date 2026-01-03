@@ -1,5 +1,6 @@
 import type { Item } from "./item.ts";
 import type { Author } from "./author.ts";
+import { Category } from "./category.ts";
 
 export interface Rss {
   /**
@@ -50,7 +51,7 @@ export interface Rss {
   /**
    * 채널이 속한 하나 이상의 카테고리입니다.
    */
-  category?: Array<string>;
+  category?: Array<Category>;
 
   /**
    * 채널을 생성하는 데 사용된 프로그램을 나타내는 문자열입니다.

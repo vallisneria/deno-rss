@@ -1,6 +1,7 @@
 import type { Item, Rss } from "../model/mod.ts";
 import { stringify } from "@libs/xml";
 import * as utils from "./utils.ts";
+import type { Category } from "../model/category.ts";
 
 type RequireField = "title" | "link" | "description" | "items";
 type Buildable<T extends string> = RequireField extends T ? true : false;
@@ -81,7 +82,7 @@ export class RssBuilder<P extends string = never> {
     return this;
   }
 
-  public category(category: Array<string>): this {
+  public category(category: Array<Category>): this {
     this.rss.category = category;
     return this;
   }

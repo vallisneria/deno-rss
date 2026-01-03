@@ -49,7 +49,15 @@ export function rssToXml(rss: Rss) {
   }
 
   if (rss.category) {
-    channel.category = rss.category;
+    channel.category = rss.category.map((category) => {
+      if (category.domain) {
+        return {
+          "@domain": category.domain.toString(),
+          "#text": category.name,
+        };
+      }
+      return category.name;
+    });
   }
 
   if (rss.generator) {
@@ -91,7 +99,15 @@ function itemToXml(item: Item) {
   }
 
   if (item.category) {
-    data.category = item.category;
+    data.category = item.category.map((category) => {
+      if (category.domain) {
+        return {
+          "@domain": category.domain.toString(),
+          "#text": category.name,
+        };
+      }
+      return category.name;
+    });
   }
 
   if (item.comments) {

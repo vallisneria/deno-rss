@@ -1,4 +1,4 @@
-import type { Item } from "../model/mod.ts";
+import type { Category, Item } from "../model/mod.ts";
 
 type RequireField = "title" | "link" | "description" | "pubDate" | "guid";
 type Buildable<T extends string> = RequireField extends T ? true : false;
@@ -32,7 +32,7 @@ export class ItemBuilder<P extends string = never> {
     return this;
   }
 
-  public category(category: Array<string>): this {
+  public category(category: Array<Category>): this {
     this.item.category = category;
     return this;
   }

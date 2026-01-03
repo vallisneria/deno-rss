@@ -1,4 +1,5 @@
 import type { Author } from "./author.ts";
+import { Category } from "./category.ts";
 import type { Enclosure } from "./enclosure.ts";
 import type { Guid } from "./guid.ts";
 
@@ -26,7 +27,7 @@ export interface Item {
   /**
    * 항목이 속한 하나 이상의 카테고리입니다.
    */
-  category?: Array<string>;
+  category?: Array<Category>;
 
   /**
    * 항목에 대한 댓글 페이지의 URL입니다.
