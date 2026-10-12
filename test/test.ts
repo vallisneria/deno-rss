@@ -1,9 +1,9 @@
-import { assertEquals, assertStringIncludes, assertThrows } from "@std/assert";
-import { ItemBuilder, RssBuilder } from "@vallisneria/rss";
+import { expect, test } from "vitest";
+import { ItemBuilder, RssBuilder } from "../src/mod.ts";
 
 // ==================== 기본 빌더 테스트 ====================
 
-Deno.test("ItemBuilder - 유효한 아이템 생성", () => {
+test("ItemBuilder - 유효한 아이템 생성", () => {
   const item = new ItemBuilder()
     .title("Test Item")
     .description("Lorem Ipsum dolor sit amet")
@@ -12,14 +12,14 @@ Deno.test("ItemBuilder - 유효한 아이템 생성", () => {
     .guid("https://example.com", true)
     .build();
 
-  assertEquals(item.title, "Test Item");
-  assertEquals(item.description, "Lorem Ipsum dolor sit amet");
-  assertEquals(item.link.toString(), "https://example.com/");
-  assertEquals(item.guid.id, "https://example.com");
-  assertEquals(item.guid.isPermaLink, true);
+  expect(item.title).toEqual("Test Item");
+  expect(item.description).toEqual("Lorem Ipsum dolor sit amet");
+  expect(item.link.toString()).toEqual("https://example.com/");
+  expect(item.guid.id).toEqual("https://example.com");
+  expect(item.guid.isPermaLink).toEqual(true);
 });
 
-Deno.test("RssBuilder - 유효한 RSS 피드 생성", () => {
+test("RssBuilder - 유효한 RSS 피드 생성", () => {
   const item = new ItemBuilder()
     .title("Test Item")
     .description("Lorem Ipsum dolor sit amet")
@@ -36,15 +36,15 @@ Deno.test("RssBuilder - 유효한 RSS 피드 생성", () => {
     .item([item])
     .build();
 
-  assertEquals(rss.title, "Test RSS");
-  assertEquals(rss.description, "Lorem Ipsum dolor sit amet");
-  assertEquals(rss.link.toString(), "https://example.com/");
-  assertEquals(rss.item.length, 1);
+  expect(rss.title).toEqual("Test RSS");
+  expect(rss.description).toEqual("Lorem Ipsum dolor sit amet");
+  expect(rss.link.toString()).toEqual("https://example.com/");
+  expect(rss.item.length).toEqual(1);
 });
 
 // ==================== XML 생성 테스트 ====================
 
-Deno.test("RssBuilder - XML 선언이 포함된 유효한 XML 생성", () => {
+test("RssBuilder - XML 선언이 포함된 유효한 XML 생성", () => {
   const item = new ItemBuilder()
     .title("Test Item")
     .description("Test description")
@@ -60,18 +60,17 @@ Deno.test("RssBuilder - XML 선언이 포함된 유효한 XML 생성", () => {
     .item([item])
     .buildRss();
 
-  assertStringIncludes(rss, '<?xml version="1.0" encoding="UTF-8"?>');
-  assertStringIncludes(rss, '<rss version="2.0">');
-  assertStringIncludes(rss, "<channel>");
-  assertStringIncludes(rss, "<title><![CDATA[Test Feed]]></title>");
-  assertStringIncludes(rss, "<link>https://example.com/</link>");
-  assertStringIncludes(
-    rss,
+  expect(rss).toContain('<?xml version="1.0" encoding="UTF-8"?>');
+  expect(rss).toContain('<rss version="2.0">');
+  expect(rss).toContain("<channel>");
+  expect(rss).toContain("<title><![CDATA[Test Feed]]></title>");
+  expect(rss).toContain("<link>https://example.com/</link>");
+  expect(rss).toContain(
     "<description><![CDATA[Test feed description]]></description>",
   );
 });
 
-Deno.test("RssBuilder - XML에 아이템 포함", () => {
+test("RssBuilder - XML에 아이템 포함", () => {
   const item = new ItemBuilder()
     .title("Item Title")
     .description("Item description")
@@ -87,13 +86,13 @@ Deno.test("RssBuilder - XML에 아이템 포함", () => {
     .item([item])
     .buildRss();
 
-  assertStringIncludes(rss, "<item>");
-  assertStringIncludes(rss, "<title><![CDATA[Item Title]]></title>");
-  assertStringIncludes(rss, "<link>https://example.com/item</link>");
-  assertStringIncludes(rss, '<guid isPermaLink="false">item-1</guid>');
+  expect(rss).toContain("<item>");
+  expect(rss).toContain("<title><![CDATA[Item Title]]></title>");
+  expect(rss).toContain("<link>https://example.com/item</link>");
+  expect(rss).toContain('<guid isPermaLink="false">item-1</guid>');
 });
 
-Deno.test("RssBuilder - XML에 선택적 필드 포함", () => {
+test("RssBuilder - XML에 선택적 필드 포함", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -112,12 +111,12 @@ Deno.test("RssBuilder - XML에 선택적 필드 포함", () => {
     .item([item])
     .buildRss();
 
-  assertStringIncludes(rss, "<language>ko-kr</language>");
-  assertStringIncludes(rss, "<copyright>Copyright 2025</copyright>");
-  assertStringIncludes(rss, "<ttl>60</ttl>");
+  expect(rss).toContain("<language>ko-kr</language>");
+  expect(rss).toContain("<copyright>Copyright 2025</copyright>");
+  expect(rss).toContain("<ttl>60</ttl>");
 });
 
-Deno.test("RssBuilder - XML에 enclosure 포함", () => {
+test("RssBuilder - XML에 enclosure 포함", () => {
   const item = new ItemBuilder()
     .title("Test Item")
     .description("Lorem Ipsum dolor sit amet")
@@ -138,15 +137,15 @@ Deno.test("RssBuilder - XML에 enclosure 포함", () => {
     .item([item])
     .buildRss();
 
-  assertStringIncludes(rss, "<enclosure");
-  assertStringIncludes(rss, 'url="https://example.com/enclosure.mp3"');
-  assertStringIncludes(rss, 'length="1234567"');
-  assertStringIncludes(rss, 'type="audio/mpeg"');
+  expect(rss).toContain("<enclosure");
+  expect(rss).toContain('url="https://example.com/enclosure.mp3"');
+  expect(rss).toContain('length="1234567"');
+  expect(rss).toContain('type="audio/mpeg"');
 });
 
 // ==================== Author 형식 테스트 ====================
 
-Deno.test("RssBuilder - 이메일이 있는 author는 올바른 형식 사용", () => {
+test("RssBuilder - 이메일이 있는 author는 올바른 형식 사용", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -165,14 +164,13 @@ Deno.test("RssBuilder - 이메일이 있는 author는 올바른 형식 사용", 
     .buildRss();
 
   // RSS 2.0 spec: email (name) format
-  assertStringIncludes(rss, "<author>john@example.com (John Doe)</author>");
-  assertStringIncludes(
-    rss,
+  expect(rss).toContain("<author>john@example.com (John Doe)</author>");
+  expect(rss).toContain(
     "<managingEditor>jane@example.com (Jane Doe)</managingEditor>",
   );
 });
 
-Deno.test("RssBuilder - 이메일이 없는 author는 이름만 사용", () => {
+test("RssBuilder - 이메일이 없는 author는 이름만 사용", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -190,33 +188,25 @@ Deno.test("RssBuilder - 이메일이 없는 author는 이름만 사용", () => {
     .item([item])
     .buildRss();
 
-  assertStringIncludes(rss, "<author>John Doe</author>");
-  assertStringIncludes(rss, "<webMaster>Jane Doe</webMaster>");
+  expect(rss).toContain("<author>John Doe</author>");
+  expect(rss).toContain("<webMaster>Jane Doe</webMaster>");
 });
 
 // ==================== 검증 테스트 ====================
 
-Deno.test("ItemBuilder - 빈 제목에 대해 에러 발생", () => {
-  assertThrows(
-    () => {
-      new ItemBuilder().title("");
-    },
-    Error,
-    "제목은 비어있을 수 없습니다",
-  );
+test("ItemBuilder - 빈 제목에 대해 에러 발생", () => {
+  expect(() => {
+    new ItemBuilder().title("");
+  }).toThrow("제목은 비어있을 수 없습니다");
 });
 
-Deno.test("ItemBuilder - 공백만 있는 제목에 대해 에러 발생", () => {
-  assertThrows(
-    () => {
-      new ItemBuilder().title("   ");
-    },
-    Error,
-    "제목은 비어있을 수 없습니다",
-  );
+test("ItemBuilder - 공백만 있는 제목에 대해 에러 발생", () => {
+  expect(() => {
+    new ItemBuilder().title("   ");
+  }).toThrow("제목은 비어있을 수 없습니다");
 });
 
-Deno.test("ItemBuilder - 제목에서 공백 제거", () => {
+test("ItemBuilder - 제목에서 공백 제거", () => {
   const item = new ItemBuilder()
     .title("  Test Item  ")
     .description("Test")
@@ -225,30 +215,22 @@ Deno.test("ItemBuilder - 제목에서 공백 제거", () => {
     .guidNonPermalink("test")
     .build();
 
-  assertEquals(item.title, "Test Item");
+  expect(item.title).toEqual("Test Item");
 });
 
-Deno.test("RssBuilder - 빈 제목에 대해 에러 발생", () => {
-  assertThrows(
-    () => {
-      new RssBuilder().title("");
-    },
-    Error,
-    "제목은 비어있을 수 없습니다",
-  );
+test("RssBuilder - 빈 제목에 대해 에러 발생", () => {
+  expect(() => {
+    new RssBuilder().title("");
+  }).toThrow("제목은 비어있을 수 없습니다");
 });
 
-Deno.test("RssBuilder - 음수 ttl에 대해 에러 발생", () => {
-  assertThrows(
-    () => {
-      new RssBuilder().ttl(-1);
-    },
-    Error,
-    "ttl은 양수여야 합니다",
-  );
+test("RssBuilder - 음수 ttl에 대해 에러 발생", () => {
+  expect(() => {
+    new RssBuilder().ttl(-1);
+  }).toThrow("ttl은 양수여야 합니다");
 });
 
-Deno.test("RssBuilder - 0 ttl 허용", () => {
+test("RssBuilder - 0 ttl 허용", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -265,24 +247,20 @@ Deno.test("RssBuilder - 0 ttl 허용", () => {
     .item([item])
     .build();
 
-  assertEquals(rss.ttl, 0);
+  expect(rss.ttl).toEqual(0);
 });
 
-Deno.test("ItemBuilder - 음수 enclosure length에 대해 에러 발생", () => {
-  assertThrows(
-    () => {
-      new ItemBuilder().enclosure(
-        new URL("https://example.com/file.mp3"),
-        -1,
-        "audio/mpeg",
-      );
-    },
-    Error,
-    "길이는 양수여야 합니다",
-  );
+test("ItemBuilder - 음수 enclosure length에 대해 에러 발생", () => {
+  expect(() => {
+    new ItemBuilder().enclosure(
+      new URL("https://example.com/file.mp3"),
+      -1,
+      "audio/mpeg",
+    );
+  }).toThrow("길이는 양수여야 합니다");
 });
 
-Deno.test("ItemBuilder - 0 enclosure length 허용", () => {
+test("ItemBuilder - 0 enclosure length 허용", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -292,12 +270,12 @@ Deno.test("ItemBuilder - 0 enclosure length 허용", () => {
     .enclosure(new URL("https://example.com/file.mp3"), 0, "audio/mpeg")
     .build();
 
-  assertEquals(item.enclosure?.length, 0);
+  expect(item.enclosure?.length).toEqual(0);
 });
 
 // ==================== 날짜 처리 테스트 ====================
 
-Deno.test("ItemBuilder - 문자열에서 날짜 처리", () => {
+test("ItemBuilder - 문자열에서 날짜 처리", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -306,22 +284,18 @@ Deno.test("ItemBuilder - 문자열에서 날짜 처리", () => {
     .guidNonPermalink("test")
     .build();
 
-  assertEquals(
-    item.pubDate.toString(),
+  expect(item.pubDate.toString()).toEqual(
     Temporal.Instant.from("2025-01-01T00:00:00Z").toString(),
   );
 });
 
-Deno.test("ItemBuilder - 잘못된 날짜 문자열에 대해 에러 발생", () => {
-  assertThrows(
-    () => {
-      new ItemBuilder().pubDateFromString("invalid date");
-    },
-    Error,
-  );
+test("ItemBuilder - 잘못된 날짜 문자열에 대해 에러 발생", () => {
+  expect(() => {
+    new ItemBuilder().pubDateFromString("invalid date");
+  }).toThrow(Error);
 });
 
-Deno.test("RssBuilder - epoch milliseconds로부터 lastBuildDate 처리", () => {
+test("RssBuilder - epoch milliseconds로부터 lastBuildDate 처리", () => {
   const timestamp = 1609459200000; // 2021-01-01T00:00:00Z
   const item = new ItemBuilder()
     .title("Test")
@@ -339,15 +313,14 @@ Deno.test("RssBuilder - epoch milliseconds로부터 lastBuildDate 처리", () =>
     .item([item])
     .build();
 
-  assertEquals(
-    rss.lastBuildDate?.toString(),
+  expect(rss.lastBuildDate?.toString()).toEqual(
     Temporal.Instant.fromEpochMilliseconds(timestamp).toString(),
   );
 });
 
 // ==================== GUID 테스트 ====================
 
-Deno.test("ItemBuilder - guidPermalink는 isPermaLink를 true로 설정", () => {
+test("ItemBuilder - guidPermalink는 isPermaLink를 true로 설정", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -356,11 +329,11 @@ Deno.test("ItemBuilder - guidPermalink는 isPermaLink를 true로 설정", () => 
     .guidPermalink(new URL("https://example.com/item"))
     .build();
 
-  assertEquals(item.guid.id, "https://example.com/item");
-  assertEquals(item.guid.isPermaLink, true);
+  expect(item.guid.id).toEqual("https://example.com/item");
+  expect(item.guid.isPermaLink).toEqual(true);
 });
 
-Deno.test("ItemBuilder - guidNonPermalink는 isPermaLink를 false로 설정", () => {
+test("ItemBuilder - guidNonPermalink는 isPermaLink를 false로 설정", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -369,32 +342,38 @@ Deno.test("ItemBuilder - guidNonPermalink는 isPermaLink를 false로 설정", ()
     .guidNonPermalink("unique-id-123")
     .build();
 
-  assertEquals(item.guid.id, "unique-id-123");
-  assertEquals(item.guid.isPermaLink, false);
+  expect(item.guid.id).toEqual("unique-id-123");
+  expect(item.guid.isPermaLink).toEqual(false);
 });
 
 // ==================== 카테고리 테스트 ====================
 
-Deno.test("ItemBuilder - 카테고리 추가", () => {
+test("ItemBuilder - 카테고리 추가", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
     .pubDateFromEpochMilliseconds(1234)
     .link(new URL("https://example.com"))
     .guidNonPermalink("test")
-    .category([{ name: "Technology" }, {
-      name: "News",
-      domain: new URL("https://example.com/news"),
-    }])
+    .category([
+      { name: "Technology" },
+      {
+        name: "News",
+        domain: new URL("https://example.com/news"),
+      },
+    ])
     .build();
 
-  assertEquals(item.category, [{ name: "Technology" }, {
-    name: "News",
-    domain: new URL("https://example.com/news"),
-  }]);
+  expect(item.category).toEqual([
+    { name: "Technology" },
+    {
+      name: "News",
+      domain: new URL("https://example.com/news"),
+    },
+  ]);
 });
 
-Deno.test("RssBuilder - 카테고리 추가", () => {
+test("RssBuilder - 카테고리 추가", () => {
   const item = new ItemBuilder()
     .title("Test")
     .description("Test")
@@ -414,16 +393,15 @@ Deno.test("RssBuilder - 카테고리 추가", () => {
     .item([item])
     .buildRss();
 
-  assertStringIncludes(
-    rss,
+  expect(rss).toContain(
     '<category domain="https://example.com/tech">Tech</category>',
   );
-  assertStringIncludes(rss, "<category>Blog</category>");
+  expect(rss).toContain("<category>Blog</category>");
 });
 
 // ==================== 여러 아이템 테스트 ====================
 
-Deno.test("RssBuilder - 여러 아이템 처리", () => {
+test("RssBuilder - 여러 아이템 처리", () => {
   const items = [
     new ItemBuilder()
       .title("Item 1")
@@ -448,8 +426,8 @@ Deno.test("RssBuilder - 여러 아이템 처리", () => {
     .item(items)
     .buildRss();
 
-  assertStringIncludes(rss, "<title><![CDATA[Item 1]]></title>");
-  assertStringIncludes(rss, "<title><![CDATA[Item 2]]></title>");
-  assertStringIncludes(rss, "https://example.com/1");
-  assertStringIncludes(rss, "https://example.com/2");
+  expect(rss).toContain("<title><![CDATA[Item 1]]></title>");
+  expect(rss).toContain("<title><![CDATA[Item 2]]></title>");
+  expect(rss).toContain("https://example.com/1");
+  expect(rss).toContain("https://example.com/2");
 });
