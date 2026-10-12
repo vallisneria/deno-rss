@@ -5,12 +5,22 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "dev": "vitest"
+    "dev": "vitest",
+    "check": "tsc --noEmit"
   },
   "devDependencies": {
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "typescript": "^6.0.2"
   },
   "dependencies": {
     "@libs/xml": "npm:@jsr/libs__xml@^7.0.4"
-  }
+  },
+  "description": "RSS 2.0 feed builder for any JavaScript runtime.",
+  "license": "MIT",
+  "exports": "./src/mod.ts",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ]
 }

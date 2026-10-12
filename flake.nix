@@ -19,7 +19,7 @@
         default = pkgs.mkShell {
           packages = [
             pkgs.nodejs_26
-            pkgs.deno
+            pkgs.bun
           ];
         };
       });

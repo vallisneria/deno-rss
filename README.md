@@ -77,7 +77,7 @@ const rssItems = items.map((item) =>
     .pubDateFromEpochMilliseconds(item.date)
     .guidPermalink(new URL(item.url))
     .author("John Doe", "john@example.com")
-    .category(["Technology", "Programming"])
+    .category([{ name: "Technology" }, { name: "Programming" }])
     .build()
 );
 
@@ -88,9 +88,15 @@ const rss = new RssBuilder()
   .language("en-us")
   .copyright("Copyright 2025")
   .managingEditor("Editor Name", "editor@example.com")
-  .category(["Technology", "Blog"])
+  .category([{ name: "Technology" }, { name: "Blog" }])
   .item(rssItems)
   .buildRss();
 
 console.log(rss);
 ```
+
+## Development
+
+Use `nix develop` for Node.js and Bun, then `npm ci`, `npm test`, and
+`npm run check`. Package metadata for JSR lives in `jsr.json`; dependencies
+and development commands live in `package.json`.

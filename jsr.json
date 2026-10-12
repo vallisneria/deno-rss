@@ -1,14 +1,14 @@
 {
-  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
   "name": "@vallisneria/rss",
   "description": "RSS 2.0 feed builder for any JavaScript runtime.",
   "version": "0.2.0",
   "exports": "./src/mod.ts",
   "license": "MIT",
-  "imports": {
-    "@libs/xml": "jsr:@libs/xml@^7.0.3"
-  },
-  "compilerOptions": {
-    "strict": true
+  "publish": {
+    "include": [
+      "src/**/*.ts",
+      "README.md",
+      "LICENSE"
+    ]
   }
 }
