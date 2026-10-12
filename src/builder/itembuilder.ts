@@ -1,4 +1,5 @@
 import type { Category, Item } from "../model/mod.ts";
+import { toDate } from "./utils.ts";
 
 type RequireField = "title" | "link" | "description" | "pubDate" | "guid";
 type Buildable<T extends string> = RequireField extends T ? true : false;
@@ -64,21 +65,19 @@ export class ItemBuilder<P extends string = never> {
     return this.guid(id, false);
   }
 
-  public pubDate(pubDate: Temporal.Instant): ItemBuilder<P | "pubDate"> {
-    this.item.pubDate = pubDate;
+  public pubDate(pubDate: Date): ItemBuilder<P | "pubDate"> {
+    this.item.pubDate = toDate(pubDate);
     return this as unknown as ItemBuilder<P | "pubDate">;
   }
 
   public pubDateFromString(date: string): ItemBuilder<P | "pubDate"> {
-    const pubDate = Temporal.Instant.from(date);
-    return this.pubDate(pubDate);
+    return this.pubDate(toDate(date));
   }
 
   public pubDateFromEpochMilliseconds(
     timestamp: number,
   ): ItemBuilder<P | "pubDate"> {
-    const pubDate = Temporal.Instant.fromEpochMilliseconds(timestamp);
-    return this.pubDate(pubDate);
+    return this.pubDate(toDate(timestamp));
   }
 
   public build(

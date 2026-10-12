@@ -284,9 +284,7 @@ test("ItemBuilder - 문자열에서 날짜 처리", () => {
     .guidNonPermalink("test")
     .build();
 
-  expect(item.pubDate.toString()).toEqual(
-    Temporal.Instant.from("2025-01-01T00:00:00Z").toString(),
-  );
+  expect(item.pubDate.toISOString()).toEqual("2025-01-01T00:00:00.000Z");
 });
 
 test("ItemBuilder - 잘못된 날짜 문자열에 대해 에러 발생", () => {
@@ -313,8 +311,71 @@ test("RssBuilder - epoch milliseconds로부터 lastBuildDate 처리", () => {
     .item([item])
     .build();
 
-  expect(rss.lastBuildDate?.toString()).toEqual(
-    Temporal.Instant.fromEpochMilliseconds(timestamp).toString(),
+  expect(rss.lastBuildDate?.getTime()).toEqual(timestamp);
+});
+
+test("ItemBuilder - Date로 pubDate 설정", () => {
+  const date = new Date("2025-01-01T00:00:00Z");
+  const item = new ItemBuilder()
+    .title("Test")
+    .description("Test")
+    .pubDate(date)
+    .link(new URL("https://example.com"))
+    .guidNonPermalink("test")
+    .build();
+
+  expect(item.pubDate).toEqual(date);
+});
+
+test("ItemBuilder - 전달한 Date를 수정해도 pubDate는 바뀌지 않음", () => {
+  const date = new Date("2025-01-01T00:00:00Z");
+  const item = new ItemBuilder()
+    .title("Test")
+    .description("Test")
+    .pubDate(date)
+    .link(new URL("https://example.com"))
+    .guidNonPermalink("test")
+    .build();
+
+  date.setTime(0);
+
+  expect(item.pubDate.toISOString()).toEqual("2025-01-01T00:00:00.000Z");
+});
+
+test("ItemBuilder - 유효하지 않은 Date에 대해 에러 발생", () => {
+  expect(() => {
+    new ItemBuilder().pubDate(new Date("invalid"));
+  }).toThrow("유효하지 않은 날짜입니다");
+});
+
+test("RssBuilder - 유효하지 않은 Date에 대해 에러 발생", () => {
+  expect(() => {
+    new RssBuilder().lastBuildDate(new Date(NaN));
+  }).toThrow("유효하지 않은 날짜입니다");
+});
+
+test("RssBuilder - XML에 RFC 822 형식의 날짜 포함", () => {
+  const item = new ItemBuilder()
+    .title("Test")
+    .description("Test")
+    .pubDate(new Date("2025-01-01T09:30:00+09:00"))
+    .link(new URL("https://example.com"))
+    .guidNonPermalink("test")
+    .build();
+
+  const rss = new RssBuilder()
+    .title("Feed")
+    .link(new URL("https://example.com"))
+    .description("Description")
+    .pubDate(new Date("2025-01-02T00:00:00Z"))
+    .lastBuildDateFromEpochMilliseconds(1609459200000)
+    .item([item])
+    .buildRss();
+
+  expect(rss).toContain("<pubDate>Wed, 01 Jan 2025 00:30:00 GMT</pubDate>");
+  expect(rss).toContain("<pubDate>Thu, 02 Jan 2025 00:00:00 GMT</pubDate>");
+  expect(rss).toContain(
+    "<lastBuildDate>Fri, 01 Jan 2021 00:00:00 GMT</lastBuildDate>",
   );
 });
 

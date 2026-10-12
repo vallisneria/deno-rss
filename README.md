@@ -1,24 +1,33 @@
 # deno-rss
 
-A simple RSS feed generator for Deno.
+A simple RSS 2.0 feed generator. It has no runtime-specific dependencies, so it
+works on Deno, Node.js, Bun, and Cloudflare Workers.
 
-This library uses Deno's unstable
-[Temporal](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Temporal)
-API. To use this library, you must enable the `temporal` flag in the `unstable`
-field of your `deno.json` file.
+## Dates
 
-For example:
+Dates are plain `Date` objects. You can also pass an epoch milliseconds number
+or a date string.
 
-```json
-{
-  "unstable": ["temporal"]
-}
+```ts
+new ItemBuilder().pubDate(new Date());
+new ItemBuilder().pubDateFromEpochMilliseconds(Date.now());
+new ItemBuilder().pubDateFromString("2025-01-01T00:00:00Z");
+```
+
+### Migrating from 0.1.x
+
+Since 0.2.0, `pubDate()` and `lastBuildDate()` take a `Date` instead of a
+`Temporal.Instant`, and `Item.pubDate`, `Rss.pubDate`, `Rss.lastBuildDate` are
+`Date`. Convert an existing `Temporal.Instant` like this:
+
+```ts
+builder.pubDate(new Date(instant.epochMilliseconds));
 ```
 
 ## Example
 
 ```ts
-import { ItemBuilder, RssBuilder } from "@vallisneria/deno-rss";
+import { ItemBuilder, RssBuilder } from "@vallisneria/rss";
 
 const item = new ItemBuilder()
   .title("My First Post")
@@ -42,7 +51,7 @@ console.log(rss);
 ## Advanced Example
 
 ```ts
-import { ItemBuilder, RssBuilder } from "@vallisneria/deno-rss";
+import { ItemBuilder, RssBuilder } from "@vallisneria/rss";
 
 // Create multiple items
 const items = [

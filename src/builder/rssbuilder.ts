@@ -30,36 +30,34 @@ export class RssBuilder<P extends string = never> {
     return this as unknown as RssBuilder<P | "description">;
   }
 
-  public pubDate(pubDate: Temporal.Instant): this {
-    this.rss.pubDate = pubDate;
+  public pubDate(pubDate: Date): this {
+    this.rss.pubDate = utils.toDate(pubDate);
     return this;
   }
 
   public pubDateFromString(date: string): this {
-    const pubDate = Temporal.Instant.from(date);
-    return this.pubDate(pubDate);
+    this.rss.pubDate = utils.toDate(date);
+    return this;
   }
 
   public pubDateFromEpochMilliseconds(epochMilliseconds: number): this {
-    const pubDate = Temporal.Instant.fromEpochMilliseconds(epochMilliseconds);
-    return this.pubDate(pubDate);
+    this.rss.pubDate = utils.toDate(epochMilliseconds);
+    return this;
   }
 
-  public lastBuildDate(lastBuildDate: Temporal.Instant): this {
-    this.rss.lastBuildDate = lastBuildDate;
+  public lastBuildDate(lastBuildDate: Date): this {
+    this.rss.lastBuildDate = utils.toDate(lastBuildDate);
     return this;
   }
 
   public lastBuildDateFromString(date: string): this {
-    const lastBuildDate = Temporal.Instant.from(date);
-    return this.lastBuildDate(lastBuildDate);
+    this.rss.lastBuildDate = utils.toDate(date);
+    return this;
   }
 
   public lastBuildDateFromEpochMilliseconds(epochMilliseconds: number): this {
-    const lastBuildDate = Temporal.Instant.fromEpochMilliseconds(
-      epochMilliseconds,
-    );
-    return this.lastBuildDate(lastBuildDate);
+    this.rss.lastBuildDate = utils.toDate(epochMilliseconds);
+    return this;
   }
 
   public language(language: string): this {

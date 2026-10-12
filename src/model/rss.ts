@@ -41,12 +41,12 @@ export interface Rss {
   /**
    * 채널 콘텐츠의 게시 날짜입니다.
    */
-  pubDate?: Temporal.Instant;
+  pubDate?: Date;
 
   /**
    * 채널 콘텐츠가 마지막으로 변경된 시간입니다.
    */
-  lastBuildDate?: Temporal.Instant;
+  lastBuildDate?: Date;
 
   /**
    * 채널이 속한 하나 이상의 카테고리입니다.

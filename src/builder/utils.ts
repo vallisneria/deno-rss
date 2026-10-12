@@ -1,9 +1,21 @@
 import type { Author, Item, Rss } from "../model/mod.ts";
 import { cdata } from "@libs/xml";
 
-export function rfc822(date: Temporal.ZonedDateTime) {
-  const jsDate = new Date(date.epochMilliseconds);
-  return jsDate.toUTCString();
+/**
+ * `Date`를 복사하여 반환합니다. 유효하지 않은 날짜면 에러를 던집니다.
+ */
+export function toDate(date: Date | string | number): Date {
+  const copied = new Date(date instanceof Date ? date.getTime() : date);
+
+  if (Number.isNaN(copied.getTime())) {
+    throw new Error("유효하지 않은 날짜입니다");
+  }
+
+  return copied;
+}
+
+export function rfc822(date: Date) {
+  return date.toUTCString();
 }
 
 export function authorString(author: Author) {
@@ -39,13 +51,11 @@ export function rssToXml(rss: Rss) {
   }
 
   if (rss.pubDate) {
-    channel.pubDate = rfc822(rss.pubDate?.toZonedDateTimeISO("UTC"));
+    channel.pubDate = rfc822(rss.pubDate);
   }
 
   if (rss.lastBuildDate) {
-    channel.lastBuildDate = rfc822(
-      rss.lastBuildDate?.toZonedDateTimeISO("UTC"),
-    );
+    channel.lastBuildDate = rfc822(rss.lastBuildDate);
   }
 
   if (rss.category) {
@@ -91,7 +101,7 @@ function itemToXml(item: Item) {
       "@isPermaLink": item.guid.isPermaLink,
       "#text": item.guid.id,
     },
-    pubDate: rfc822(item.pubDate.toZonedDateTimeISO("UTC")),
+    pubDate: rfc822(item.pubDate),
   };
 
   if (item.author) {

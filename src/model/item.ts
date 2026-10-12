@@ -47,5 +47,5 @@ export interface Item {
   /**
    * 항목이 게시된 날짜입니다.
    */
-  pubDate: Temporal.Instant;
+  pubDate: Date;
 }
